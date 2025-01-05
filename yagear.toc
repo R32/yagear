@@ -1,0 +1,9 @@
+## Interface: 11505
+## Version: 0.1.0
+## Title: yet another gear manager
+## Notes: yet another gear manager
+## Title-zhCN: 又一个装备管理
+## Notes-zhCN: 简易装备管理工具
+## Author: lwm0735
+
+yagear.lua
