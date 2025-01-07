@@ -96,6 +96,10 @@ local function put_cursor_item()
 	UIErrorsFrame:AddMessage(ERR_EQUIPMENT_MANAGER_BAGS_FULL, 1.0, 0.1, 0.1, 1.0)
 end
 
+local function hide_parent(self)
+	self:GetParent():Hide()
+end
+
 local function tip_onleave(self)
 	GameTooltip:Hide()
 end
@@ -579,10 +583,6 @@ local function popup_button_onokey(button)
 	C_EquipmentSet.CreateEquipmentSet(name, icon) -- BUGBUG : This doesn't work with "C_EquipmentSet.IgnoreSlotForSave"
 	popup:Hide()
 end
-local function popup_button_oncancel(button)
-	local popup = button:GetParent()
-	popup:Hide()
-end
 
 local function popup_onhide(popup)
 	popup.editor:SetText("")
@@ -706,7 +706,7 @@ local function popup_init(manager)
 	popup:SetPoint("TOPLEFT", manager, "BOTTOMLEFT", 0, 8)
 	popup:SetScript("OnShow", popup_onshow)
 	popup:SetScript("OnHide", popup_onhide)
-	popup.OnCancel = popup_button_oncancel
+	popup.OnCancel = hide_parent
 	popup.OnOkay = popup_button_onokey
 	-- layers
 	local label = popup:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
@@ -726,7 +726,7 @@ local function popup_init(manager)
 	editor:SetMaxLetters(16)
 	editor:SetAutoFocus(false)
 	editor:SetHistoryLines(0)
-	editor:SetScript("OnEscapePressed", popup_button_oncancel)
+	editor:SetScript("OnEscapePressed", hide_parent)
 	popup.editor = editor
 
 	popup.scroll = popup_scroll_init(popup)
@@ -774,6 +774,7 @@ local function manager_init(parent)
 	-- fixed the close button position
 	local close = manager:GetChildren()
 	close:SetPoint("TOPRIGHT", 2, 1)
+	close:SetScript("OnClick", hide_parent) -- Fixed "Interface action failed because of an AddOn"
 	-- items
 	local items = {}
 	for i = 1, 10 do
