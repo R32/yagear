@@ -418,7 +418,7 @@ local function flyout_seat_onclick(seat, button, down)
 	if not CursorHasItem() then
 		return
 	end
-	flyout:RegisterEvent("ITEM_LOCK_CHANGED")
+	flyout:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	-- put in bag
 	if location >= 0 then
 		PickupInventoryItem(id)
@@ -516,8 +516,9 @@ local function flyout_display(flyout, slot)
 	end
 end
 
-local function flyout_onitem_changed(flyout, event, slot, state)
-	-- if event ~= "ITEM_LOCK_CHANGED" then return end
+
+local function flyout_onitem_changed(flyout, event, ...)
+	-- if event ~= "PLAYER_EQUIPMENT_CHANGED" then return end
 	flyout:UnregisterAllEvents()
 	flyout_display(flyout, flyout.owner)
 end
