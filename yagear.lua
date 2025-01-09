@@ -768,7 +768,7 @@ local function manager_init(parent)
 	local manager = CreateFrame("Frame", nil, parent, "UIPanelDialogTemplate")
 	manager:SetSize(261, 155)
 	manager:SetPoint("TOPLEFT", parent, "TOPRIGHT", -38, -10)
-	manager:SetFrameStrata("MEDIUM")
+	manager:SetFrameStrata("HIGH") -- overlay compat
 	manager:SetToplevel(true)
 	manager.Title:SetText(EQUIPMENT_MANAGER)
 	-- fixed the close button position
@@ -887,7 +887,7 @@ local function init(parent)
 
 	local zone = CreateFrame("Frame", nil, flyout)
 	zone:SetPoint("TOPLEFT", flyout, "TOPRIGHT")
-	zone:SetFrameStrata("HIGH")
+	zone:SetFrameStrata("DIALOG")
 	zone:SetScript("OnLeave", flyout_zone_onleave)
 	-- TODO
 	-- local tex = zone:CreateTexture(nil, "BACKGROUND")
