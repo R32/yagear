@@ -1,5 +1,5 @@
 ## Interface: 11505
-## Version: 0.1.3
+## Version: 0.1.5
 ## Title: yet another gear manager
 ## Notes: yet another gear manager
 ## Title-zhCN: 又一个装备管理

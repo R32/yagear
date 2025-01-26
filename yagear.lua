@@ -428,12 +428,16 @@ local function flyout_seat_onclick(seat, button, down)
 	end
 end
 
-local function flyout_zone_onleave(zone)
-	if zone:IsMouseOver() then
+local function flyout_area_onleave(area)
+	if area:IsMouseOver() then
 		return
 	end
 	GameTooltip:Hide()
-	zone:GetParent():Hide()
+	area:GetParent():Hide()
+end
+
+local function flyout_seat_onleave(seat)
+	flyout_area_onleave(seat:GetParent())
 end
 
 local function flyout_onhide(flyout)
@@ -441,7 +445,7 @@ local function flyout_onhide(flyout)
 	flyout.owner = nil
 	if slot and slot.hasItem and GameTooltip:IsShown() then
 		local seat = GameTooltip:GetOwner()
-		if seat and seat:GetParent() == flyout.zone then
+		if seat and seat:GetParent() == flyout.area then
 			GameTooltip:SetOwner(slot, "ANCHOR_RIGHT")
 			GameTooltip:SetInventoryItem("player", slot:GetID(), nil, true)
 		end
@@ -473,16 +477,17 @@ local function flyout_display(flyout, slot)
 	end
 	flyout.owner = slot
 	-- update
-	local zone = flyout.zone
-	local seats = zone.seats
+	local area = flyout.area
+	local seats = area.seats
 	while #seats < num do
-		local seat = CreateFrame("BUTTON", nil, zone, "ItemButtonTemplate")
+		local seat = CreateFrame("BUTTON", nil, area, "ItemButtonTemplate")
 		seat:SetScript("OnEnter", flyout_seat_onenter)
+		seat:SetScript("OnLeave", flyout_seat_onleave)
 		seat:SetScript("OnClick", flyout_seat_onclick)
 		local len = #seats
 		local cy = len / 5
 		if cy == 0 then
-			seat:SetPoint("TOPLEFT", zone, "TOPLEFT", 3, -3)
+			seat:SetPoint("TOPLEFT", area, "TOPLEFT", 3, -3)
 		elseif floor(cy) == cy then -- 5, 10, 25
 			seat:SetPoint("TOPLEFT", seats[len - 4], "BOTTOMLEFT", 0, -3)
 		else
@@ -501,13 +506,13 @@ local function flyout_display(flyout, slot)
 	flyout:SetFrameLevel(slot:GetFrameLevel() - 1)
 	flyout:SetPoint("TOPLEFT", slot, "TOPLEFT", -3, 3)
 	if id >= 16 and id <= 18 then
-		zone:SetPoint("TOPLEFT", flyout, "BOTTOMLEFT", 0, -3)
+		area:SetPoint("TOPLEFT", flyout, "BOTTOMLEFT", 0, -3)
 	else
-		zone:SetPoint("TOPLEFT", flyout, "TOPRIGHT", 0, 0)
+		area:SetPoint("TOPLEFT", flyout, "TOPRIGHT", 0, 0)
 	end
 	local cx = min(5, num)
-	zone:SetSize(cx * 37 + (cx - 1) * 4 + 5, 43 + floor((num - 1) / 5) * 43)
-	-- zone:GetRegions():SetAllPoints() -- texture debug
+	area:SetSize(cx * 37 + (cx - 1) * 4 + 5, 43 + floor((num - 1) / 5) * 43)
+	-- area:GetRegions():SetAllPoints() -- texture debug
 	flyout:Show()
 	flyout:Raise()
 	if slot.hasItem and GameTooltip:IsOwned(slot) then
@@ -886,17 +891,17 @@ local function init(parent)
 	tex:SetTexture("Interface/PaperDollInfoFrame/UI-GearManager-ItemButton-Highlight")
 	tex:SetTexCoord(0, 0.78125, 0, 0.78125)
 
-	local zone = CreateFrame("Frame", nil, flyout)
-	zone:SetPoint("TOPLEFT", flyout, "TOPRIGHT")
-	zone:SetFrameStrata("DIALOG")
-	zone:SetScript("OnLeave", flyout_zone_onleave)
+	local area = CreateFrame("Frame", nil, flyout)
+	area:SetPoint("TOPLEFT", flyout, "TOPRIGHT")
+	area:SetFrameStrata("DIALOG")
+	area:SetScript("OnLeave", flyout_area_onleave)
 	-- TODO
-	-- local tex = zone:CreateTexture(nil, "BACKGROUND")
+	-- local tex = area:CreateTexture(nil, "BACKGROUND")
 	-- tex:SetPoint("TOPLEFT", -5, 4)
 	-- tex:SetColorTexture(1., 0, 0, 0.8)
 	---- tex:SetTexture("Interface/PaperDollInfoFrame/UI-GearManager-Flyout")
-	zone.seats = {}
-	flyout.zone = zone
+	area.seats = {}
+	flyout.area = area
 	ADDON.flyout = flyout
 	-- equipslot hook
 	hooksecurefunc("PaperDollItemSlotButton_OnEvent", flyout_onmodify)
